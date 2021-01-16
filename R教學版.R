@@ -1,0 +1,633 @@
+###R範例:
+#數值解
+f <- function(x){-(x^2+20)}
+f <- function(x){(x+1)*exp(x)}
+curve(f,xlim = c(-1000,1000))
+optimize(f,interval = c(-10,10),maximum = T)
+optimize(f,interval = c(-1000,1000),maximum = F) #tol:精度容忍度
+
+#數值積分
+f <- function(x){(x+1)*exp(x)}
+integrate(f,0,10)
+
+#畫圖
+data("cars")
+plot(cars)
+#3d散佈圖
+library(scatterplot3d)
+scatterplot3d(mtcars$wt,mtcars$disp,mtcars$mpg,main = "Basic 3D Scatter Plot")
+#地形圖
+x.volc<-10*(1:nrow(volcano))
+y.volc<-10*(1:ncol(volcano))
+contour(x.volc, y.volc, volcano, main="contour()")
+image(x.volc, y.volc, volcano, main="image()")
+persp(x.volc, y.volc, volcano, main="persp()")
+#地圖
+library(maps)
+map <- map_data("world")
+wmap1 <- ggplot(map, aes(x = long, y = lat, group = group)) + geom_polygon(colour = "white")
+wmap1
+map <- map_data("world", region = c("Japan","Laos","Cambodia", "Vietnam", "Malaysia", "Thailand", "Taiwan", "China","South Korea","North Korea","Singapore","Indonesia", "Mongolia"))
+wmap1 <- ggplot(map, aes(x = long, y = lat, group = group)) + geom_polygon(colour = "white")
+wmap1
+#文字雲圖
+library(wordcloud2)
+wordcloud2(demoFreq, size = 2, fontFamily = "微軟雅黑", color = "random-light", backgroundColor = "grey")
+
+###R特性:
+#1.命名規則:物件.函數可包含底線.句號,不能以數字或句點+數字做開頭(需利用``處理)
+1a <- 1 #unexpected symbol in "1a"
+.1a <- "s" #unexpected symbol in ".1a"
+`1a` <- 1
+中央統計所 <- "NCUSTAT" #不建議使用中文
+
+#2.賦值符號 =,<-,->
+a = 1 #特殊狀況下會造成錯誤
+b <- 2 #在函數中給變數設值使用=
+3 -> c #較少使用
+assign(paste0("a","1"),1) #進階:eval()+substitute()
+x1=x2=x3=123 #可用多個賦值符號做賦值
+x1 <- 124 ->x2
+
+#3.NA(Not a valiable),NaN(Not a Number),NULL(空物件)
+a <- NA
+b <- NULL
+c <- sqrt(-3) #NaN(Not a Number)
+class(c) #"numeric"
+#packages:mice
+
+#4.double(雙倍精度浮點運算)
+x <- seq(0,1,0.2)
+y <- seq(0,1,0.2)
+x[3]
+1-x[3]
+y[4]
+1-x[3] == y[4]
+# .Machine:查看目前配備下數值精度相關資訊
+
+#5.向量第一個指標為1而非0(python,c)
+
+#6.跳脫字元/
+read.csv("C:\Users\steven\Desktop\test.csv") #在起始 ""C:\U" 的字串中使用了 '\U' 卻無十六進位數字
+read.csv("C:\\Users\\steven\\Desktop\\test.csv")
+
+#7.自動重複循環運算
+c(1,2,3,4)+2
+c(1,2,3,4)+c(2,2,2,2)
+c(1,2,3,4)+c(1,2)
+#Q? test:c(1,2,3,4)+c(1,2,3)
+
+#8.預設左尾機率
+pnorm(1.96) #0.9750021
+pchisq(3.84,1) #0.9499565
+
+#9.RSS即SSE
+
+#10.Rstudio下善用tab鍵
+
+#11.對大小寫敏感(SAS)
+
+#12.產生物件前可不需要指定物件類別
+
+
+###?,??,help(),apropos()
+?mean #適用查詢函數
+??dplyr #適用查詢套件
+help(mean) #適用查詢函數或套件
+mean #顯示函數中的演算方式
+apropos("norm") #查詢包含該字串的函數
+#善用google
+#https://rstudio.com/resources/cheatsheets/
+#library(Rcmdr) 
+
+###套件(package):library(),require(),install.packages(),devtools::install-github(),update.packages()
+library(devtools)
+require(dplyr)
+install.packages("dplyr")
+devtools::install_github("tidyverse/dplyr")
+update.packages("dplyr")
+
+#options()
+?option
+options(encoding = "UTF-8") #資料裡有中文,亂碼時請先確認編碼標準
+getwd()
+setwd("C:\\Users\\steven\\Desktop")
+read.csv("test.csv")
+rm(list = ls())
+#memory.limit():可查詢電腦記憶體上限或限制記憶體最大使用量
+
+
+###運算子(Operator)
+1+1 #和
+1-1 #差
+2*3 #積
+6/2 #商 
+7%/%3 #商
+7%%3 #餘
+2^3 #平方
+2**3 #平方
+2^(1/2) 
+sqrt(2) #根號
+sign(-8) #判斷正負號
+sign(100)
+abs(-9) #絕對值
+#log(x,base=exp(1))
+log(2.718)
+log10(100)
+log2(16)
+exp(1) #自然數
+sin(pi/2) #cos(),tan(),asin(),sinh(),asinh()
+factorial(4) #階乘
+prod(c(1,2,3,4))
+sum(c(1,2,3,4))
+cumsum(c(1,2,3,4)) #cummax(),cummin(),cumprod()
+#邏輯判斷式
+# &,| 適用向量,陣列.資料框架的元素或子集合
+# &&,|| 適用單一元素
+# !,!=,>,<,>=,<=
+# %in% : 在...之內
+# 矩陣運算之後再講
+
+
+###資料類型(屬性)
+#數值(numeric):又分為double.integer
+class(2.2)
+class(1L)
+is.double(2.2)
+class(Inf) #-Inf
+
+#文字(character,string)
+class("abc")
+LETTERS
+letters
+LETTERS[LETTERS<"T"]
+LETTERS[LETTERS<2]
+"中">"央" #ASCII編碼
+#nchar(),toupper(),tolower(),substr(),substring(),strtrim(),strsplit(),paste(),paste0(),match(),grep(),sub(),gsub()
+#packages:stringr(http://blog.fens.me/r-stringr/),stringi
+#進階:正規表達式(regular expression)
+
+#邏輯值(logical)
+T
+F
+TRUE
+FALSE
+2+3==5
+T==1
+T < 2
+F==0
+F>1
+class(NA)
+#na,fail(),na.pass(),na.omit()
+
+#複數(complex)
+2+1i
+(2+1i)^2
+(2+1i)*(2-1i)
+
+#日期(POSIXlt):利用文字轉為日期
+(d <- Sys.Date())
+class(d)
+class("2021-01-13")
+(t <- Sys.time())
+class(t)
+as.Date("2021-01-13")
+as.Date("2021/01/13")
+as.Date("01-03-2021") #"0001-03-20"
+as.Date("01-03-2021","%m-%d-%y")
+as.Date("01-03-2021","%m/%d/%y") #NA
+#%d,%a,%A,%m,%b,%B,%y,%Y
+#packages:lubridate,hms
+
+
+#因子(factor):
+f <- c("台北","台中","彰化")
+(f <- as.factor(f))
+class(f)
+(x <- factor(c("台北","台中","彰化"),levels=c("彰化","台中","台北"),ordered=T)) #ordered:依照levels順序做排序
+為甚麼要設LEVEL?
+(y <- factor(c("台北","台北","台中","彰化"),levels=c("彰化","台中","台北"),labels=c("A","B","C"))) #labels順序與levels相同
+levels(y)
+table(y) #列聯表(也可用在字串向量)
+(z <- factor(c(1,2,2,3,3,3))) #數字亦可轉為factor
+ordered(z)
+(z <- ordered(z,levels=c(2,1,3)))
+#gl(n,k,length,labels,ordered):n分類數目,k各分類重複次數,levels內含各分類名稱的文字向量,ordered是否為順序factor
+#packages:forcats
+
+#raw:二進位資料(幾乎不會用到)
+
+
+###物件類型
+#向量(vector):最常用
+v1 <- c("a","b","c")
+v2 <- c(1,2,3)
+v3 <- c(第一項=1,第二項=2,第三項=3) #定名輸入法
+#Q? test:class(c(v1,v2))
+v <- c(1,2,3,4,5,6,7,8,9)
+seq(1,9,1) #seq(from,to,by)
+seq(1,9,0.5)
+v <- 1:9
+v <- rep(1,5) #rep(vector,times,each)
+v <- rep(1:5,time=3)
+v <- rep(1:5,each=3)
+#Q? test:v <- rep(c(letters[1:2],1:2),time = 2 , each=3)
+v <- c("a","b","c","d")
+v <- append(v,values = c("N","C","U"),after = 3) #增加元素(values)在指定位置(after)之後
+v <- replace(v,list = c(1,3,5),values = c("1","2","3")) #取代在指定位置(list)上的元素(values)
+school <- c("N","C","U","S","T","A","T")
+names(school) <- letters[1:7]
+school
+school[3]
+school['c']
+number <- 1:9
+sum(number)
+number>5
+number[number>5] #vector[condition]
+(number <- replace(number,5,NA))
+number>5
+number[number>5]
+sum(number) #Q如何解決NA?
+sort(number)
+!is.na(number)
+round(c(1.5,2.3,4.8),digits = 0) #四捨五入.ceiling(),floor(),trunc()
+#sum(),max(),min(),range(),median(),var(),sd(),cov(),cor(),sort(),which(condition),which.min(),which.max(),rev(),rank(),match(),pmatch(),all(),any(),prod()
+#R中沒有眾數mode:但可以table()找出
+
+#矩陣(matrix):
+m <- matrix(1:9)
+m <- matrix(1:12,ncol = 3)
+dim(m)
+m <- matrix(1:9,ncol = 3,nrow = 3,byrow = T)
+m <- matrix(letters[1:9])
+x <- 1:4
+dim(x)=c(2,2) #可以利用dim()將向量轉為矩陣或陣列
+x
+x[2,1]
+dim(c(1:4))=c(2,2) #賦值目標擴充到非語言的物件
+det(x)
+t(x) #轉置
+solve(x) #反矩陣
+diag(3)
+diag(1:3)
+x %*% x #+,-
+#crossprod(x,x)==t(x) %*% x
+#strucchange::solveCrossprod()==solve(t(x) %*% x)
+eigen(x) #特徵值,特徵向量
+#常用函數:qr(),lower.tri(),upper.tri(),rowSums(),rowMeans(),colSums(),colMeans()
+
+#陣列(array):多維矩陣,很少用
+(array(1:9,c(3,3,3)))
+ary3 <- array(1:27,c(3,3,3))
+ary4 <- array(1:8,c(2,2,2,2))
+x <- 1:27
+dim(x) <- c(3,3,3)
+x
+
+#資料框架(data.frame)
+df <- data.frame("name" = c("陳奕儒","林宜興","藺禹筑"),
+                 "weight" = c(65,60,55),
+                 "height" = c(170,179,155),
+                 "birth" = c("1997-01-20","1997-08-30","1996-02-21")) #建議用定名表示法建立資料框架
+View(df)
+df[2,3]
+df$height
+df[["height"]]
+df[[3]]
+df[df$name=="林宜興",]
+df[df$height>160,]
+is.vector(df$name) #資料框架的每個column為vector,可進行vector的操作
+df$BMI <- df$weight/(df$height/100)^2 #在資料框架中建立新變數
+View(df)
+#edit(),fix(),names(),row.names(),expand.grid(),stack()寬表格轉長表格,unstack(),reshape()
+#packages:dplyr,data.table,reshape(melt,cast:長寬表格轉換),tidyr
+#Q? test:讀取sale_data.xlsx,並轉換成各季度資料
+
+#串列(list):可以放所有物件
+ls <- list(v1,m,ary,df)
+View(ls)
+#unlist()
+
+#時間數列(ts)
+#ts(x,start,end,freq)
+z = ts(1:10,start = c(1959,2),freq=4) #freq:4(季),12(月),365(天)
+
+#物件常用函數
+attributes(df)
+mode(v) #適用所有物件
+class(df$name) #適用所有物件
+names(df) #適用所有物件
+length(df) #對df作用效果與ncol相同
+ncol(df) #適用矩陣,陣列,資料框架
+nrow(df) #適用矩陣,陣列,資料框架
+attach(df) #綁定物件
+head(df,2) #tail()
+str(df)
+is.vector(df$name) #is.,as.
+print() #cat(),sprintf():與C的sprintf相同
+#packages:descriptr
+
+
+###資料合併:c(),union(),rbind(),cbind(),merge()
+#c()
+comb <- c(df,ary) #list,vector
+
+#union()
+df1 <- data.frame("name" = c("陳奕儒","林宜興","藺禹筑"),
+                 "weight" = c(65,60,55),
+                 "height" = c(170,179,157),
+                 "birth" = c("1997-01-20","1997-08-30","1996-02-21"))
+View(df1)
+df2 <- data.frame(name = "黃雅若",
+                  weight = 48,
+                  birth = "199?-08-08",
+                  height = 161)
+View(df2)
+df3 <- union(df1,df2,df2)
+
+#rbind()
+rbind(df1,df2,df2)
+
+#cbind()
+id <- c("108225016","109225016","109225015","109225022")
+name <- c("陳奕儒","林宜興","藺禹筑","黃雅若")
+weight <- c(65,60,55,48)
+height = c(170,179,157,161)
+birth = c("1997-01-20","1997-08-30","1996-02-21","199?-08-08")
+df3 <- cbind(id,name,weight,height,birth) #matrix,元素為character
+
+#merge:資料庫結構(主鍵,外來鍵)
+df4 <- data.frame(id = c("陳奕儒","林宜興","黃雅若","藺禹筑"),
+                  number = c("108225016","109225016","109225022","109225015"),
+                  gender = c("M","M","F","F"))
+merge(df3,df4,by.x = c("id","name") , by.y = c("number","id")) #兩個data.frame鍵值名稱相同時可用by
+#packages:dplyr,data.table
+#http://blog.fens.me/r-data-table/
+#Q? test:合併dplyr套件中的 band_instruments,band_members資料集,並列出所有資料
+
+
+###外部資料
+#利用base R匯入外部資料
+file <- file.choose() #找出檔案路徑
+list.files() #找出資料夾下的所有檔案與子資料夾名稱
+scan(file,what = "character") #不指定路徑則為手動輸入資料(參考readline()),sep:指定分隔符號
+read.table("C:\\Users\\steven\\Desktop\\R_csv.txt") #未指定sep,header
+read.csv(file = "C:\\Users\\steven\\Desktop\\R_csv.txt" ,header = T,) #sep=","
+read.csv2() #sep=";"
+read.delim(file = ) #sep="\t"
+#load() 讀取R資料(.rda)
+
+#利用packages匯入外部資料
+library(readr) #較快速
+library(readxl) #讀取excel(.xls,.xlsx)
+#packages:xlsx,openxlsx,gdata,foreign(S,SAS,SPSSS,Stata),RODBC,mongolite,jsonlite
+#進階:讀取圖片packages:png,jpeg,magick,biOps
+
+#匯出資料
+write()
+write.csv()
+save() #將指定物件儲存為.rda檔
+save.image() #將目前工作空間中的所有物件儲存為.rda檔
+#Q? test:匯出iris data到你的電腦中
+
+
+###條件語法:搭配return使用
+# if(condition){
+#   statements
+# }else if(condiiton){ #可以有多個else if 
+#     statements
+#   }else{statements}
+#例1:多個statement
+x=3
+if(x >= 2){
+  y=4
+  z=5 #可以不只一個statement
+}
+y;z
+#例2
+x=5
+y=8
+if(x>y){
+  z=x-y
+}else{
+  z=y-x
+}
+z
+
+#例3:多個condition
+x=5
+y=6
+if(x > 3 & y > 4){
+  cat(x,"大於3",y,"大於4") #cat():直接output,類似print()+paste()的效果
+}else if(x>3 & y <4){
+  cat(x,"大於3",y,"小於4")
+}else if(x < 3 & y > 4){
+  cat(x,"小於3",y,"大於4")
+}else{
+  cat(x,"小於3",y,"小於4")
+  }
+
+#例4:if-else if-else只能對一個元素使用(無法對vector使用)
+x = 1:9
+if(x>3){x^2} #條件的長度 > 1，因此只能用其第一元素
+
+#ifelse(condition,yes statement,no statement):只能有單一statement
+#例1:ifelse可以對vector使用
+x=1:9
+ifelse(x>3,x^2,sqrt(x))
+
+#例2:多個condition搭配ifelse使用
+x=1:9
+ifelse(x<3,x^2,
+       ifelse(x<5,x^3,
+              ifelse(x<9,x^4,sqrt(x))))
+#例3
+ifelse(letters %in% c("a","f","p"),paste0("NCU",letters),letters)
+
+#switch():少用
+#例1
+x=3
+switch(x,2+2,mean(1:10),rnorm(5)) #x=3,執行switch函數中x後第三個statement
+
+#例2:可用文字替代
+x="身高"
+switch(x,姓名="藺禹筑",身高=157,體重=55)
+
+
+###迴圈:搭配break(跳出迴圈),next(跳過剩下的statements)使用
+#for(迴圈變數 in 範圍){statements}
+#例1:單迴圈
+total = 0
+for(i in 1:9){
+  total = total + i #必須在迴圈前先設定total才能在迴圈內使用
+  print(total)
+}
+
+#例2:多迴圈
+#Q? test:利用雙重迴圈做九九乘法表
+
+#while(condition for execute ){statements}
+#例1
+total = 0
+i = 1
+while(i <= 100){
+  total = total + i
+  print(paste0("i=",i,",total=",total))
+  i = i+1 #若無此statement,則i永遠為1,會不斷重複迴圈(不會停止)
+}
+
+#repeat:類似while,較少用 
+# repeat{
+#   statements
+#   if(condition){break}
+#   statements
+#   }
+
+#packages:foreach,doParallel
+
+#Q? test:利用iris data
+# 若Species為 setosa 則 Sepal.Width+0.2
+# 若Species為 versicolor 則 Petal.Width+0.3
+# 其他狀況則 Sepal.Length+0.4 , Petal.Length+0.4
+# 計算Sepal.Length,Sepal.Width,Petal.Length,Petal.Width的平均值
+
+
+###function
+# function(parameters){
+#   statements
+#   return()}
+#例1:
+BMI_function <- function(height,weight){
+  BMI = weight/(height/100)^2
+  return(BMI) #也可以只寫BMI,但沒有這行則不會有output
+}
+BMI_function(157,55)
+
+#例2:如果要回傳多個值?
+BMI_function <- function(height,weight){
+  BMI = weight/(height/100)^2
+  return(height,weight,BMI)
+}
+BMI_function(157,55) #不允許多引數回傳 如何解決?
+
+#例3:具有預設值的函數
+BMI_function <- function(height=157,weight=55){
+  BMI = weight/(height/100)^2
+  return(BMI)
+}
+BMI_function()
+BMI_function(height = 170)
+
+#例4:function具有遞迴性質
+f1 <- function(x){
+  if(x>0){
+    y=x-1
+    return(x*f1(y))
+  }else{
+    return(1)
+  }
+}
+f1(4) #4*3*2*1
+
+#args():顯示函數的參數與預設值,body():顯示函數內容,formals(),invisible()
+#進階技巧
+#全域變數(可用 <<- 做指定)
+#...:將function裡面所用到的其他function需要的參數傳入
+#參數可以是其他函數的名稱
+
+
+###apply循環
+#與for迴圈比較效率
+#如何知道程式執行時間?system.time(),Sys.time(),proc.time()
+#方法1:使用迴圈Time difference of 12.46436 mins
+start <- Sys.time()
+a <- c()
+b <- c()
+
+  for(i in 1:1000000){
+    a[i] <- mean(rnorm(5000,mean = i))
+    b[i] <- var(rnorm(5000,mean = i))}
+  df <- data.frame(i = 1:10000,a,b)
+  
+end <- Sys.time()
+end-start
+#方法2:使用apply執行Time difference of 12.30729 mins
+start <- Sys.time()
+ls <- lapply(c(1:1000000),FUN = function(x){
+  c(
+    a <- mean(rnorm(5000,mean = x)),
+    b <- var(rnorm(5000,mean = x))
+  )
+})
+df <- do.call(rbind,ls)
+end <- Sys.time()
+end-start
+
+#apply(x,MARGIN,FUN,...):x為矩陣或陣列,MARGIN=1依row執行=2依column執行,FUN為作用的函數名稱
+x=matrix(1:12,4,3)
+x
+apply(x,1,mean)
+apply(x,2,mean)
+
+#lapply(list, function).sapply(list, function):x為向量或list
+x <- list(a = 1:10,beta = exp(-3:3),logic = c(T,F,F,T))
+x
+lapply(x,mean) #回傳list
+sapply(x,mean) #回傳向量或矩陣(特殊情況回傳list)
+sapply(1:5,seq) #sapply回傳list情況:長度不同
+
+#tapply(vector, index, function):使用一個或多個變數來幫另一個數值向量計算.較少用
+# presidents #1945Q1-1974Q4 美國總統支持度ts資料
+# tapply(presidents,cycle(presidents),mean,na.rm=TRUE)
+
+#其他apply方法
+#vapply(list, function, FUN.VALUE = type, ...)
+#mapply(function, ...)
+#rapply(list, function)
+#eapply(env, FUN, ..., all.names = FALSE, USE.NAMES = TRUE)
+#參考:http://blog.fens.me/r-apply/
+
+#進階:使用平行化套件Time difference of 2.979812 mins
+# start <- Sys.time()
+# library(parallel)
+# library(snow)
+# cpu.cores <- detectCores() #取得cpu核心數
+# cl = makeCluster(cpu.cores,type='SOCK') #開啟指定核心數
+# #clusterExport(cl,c("rnorm","mean","var")) #若平行運算中須使用非base R的物件或函數須先進行指定
+# ls_snow <- parLapply(cl,c(1:1000000),fun = function(x){
+#   c(
+#     a <- mean(rnorm(5000,mean = x)),
+#     b <- var(rnorm(5000,mean = x))
+#   )
+# })
+# stopCluster(cl)
+# df_snow <- do.call(rbind,ls_snow)
+# end <- Sys.time()
+# end-start
+#google:R 平行化 平行運算 parallel
+#GPU加速packages:gputools,cudaBayesreg,HiPLARM,gmatrix,OpenCL,gpuR
+
+
+###模擬simulation:
+#set.seed():使隨機化函數可以產生固定的結果
+rnorm(10)
+rnorm(10)
+set.seed(109225004)
+rnorm(10)
+
+#sample(x,size,replace=F):replace抽取後是否放回
+x <- 1:10
+sample(x,5,replace = F)
+x <- list(a = 1:10,beta = exp(-3:3),logic = c(T,F,F,T))
+sample(x,6,replace = T)
+
+
+#機率分配函數
+rnorm(n=5,mean = 5,sd=3) #p表示隨機模擬或隨機亂數生成函式.從N(5,3^2)隨機抽5個樣本
+qnorm(p = 0.95) #q表示分位數,符合 u ≤ P(X <= x) 的最小 x
+pnorm(q = 1.96) #p表示累積機率分配函數CDF
+dnorm(x = 0) #d表示機率密度函數pdf
+#預設lower.tail=F表示左尾計算,=T則右尾計算
+#其他機率分配:https://stat.ethz.ch/R-manual/R-devel/library/stats/html/Distributions.html
+#packages:sampling
+#Q? test:建立一個函數dcunif(n,i,j)可隨機抽取n個discreteU(i,j)
