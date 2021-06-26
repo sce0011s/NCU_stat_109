@@ -231,6 +231,8 @@ v3 <- c(第一項=1,第二項=2,第三項=3) #定名輸入法
 v <- c(1,2,3,4,5,6,7,8,9)
 seq(1,9,1) #seq(from,to,by)
 seq(1,9,0.5)
+seq(0,1,length=101) #產生長度為101,min=0,max=1的向量
+diff(seq(1,9,0.5)) #計算(後-前)
 v <- 1:9
 v <- rep(1,5) #rep(vector,times,each)
 v <- rep(1:5,time=3)
@@ -394,12 +396,12 @@ merge(dplyr::band_instruments,dplyr::band_members,by="name",all = T)
 ###外部資料
 #利用base R匯入外部資料
 file <- file.choose() #找出檔案路徑
-list.files("C:\\Users\\steven\\Desktop") #找出資料夾下的所有檔案與子資料夾名稱
+list.files("C:\\Users\\steven\\Desktop\\筆記") #找出資料夾下的所有檔案與子資料夾名稱
 readLines(file,n = 1L)
 scan(file,what = "character") #不指定路徑則為手動輸入資料(參考readline()),sep:指定分隔符號
 a <- scan()
 read.table("C:\\Users\\steven\\Desktop\\R_csv.txt",fileEncoding = "UTF-8",header = T,sep = ",") #未指定sep,header.colClasses可指定變數屬性
-read.csv(file = "C:\\Users\\steven\\Desktop\\R_csv.txt" ,header = T) #sep=","
+read.csv(file = "C:\\Users\\steven\\Desktop\\R_csv.txt" ,fileEncoding = "UTF-8",header = T) #sep=","
 read.csv2() #sep=";"
 read.delim(file = ) #sep="\t"
 #load() 讀取R資料(.rda)
@@ -412,7 +414,7 @@ library(readxl) #讀取excel(.xls,.xlsx)
 
 #匯出資料
 write()
-write.csv(a,"C:\\Users\\steven\\Desktop\\R_scan1.csv")
+write.csv(a,"C:\\Users\\steven\\Desktop\\R_scan11.csv")
 save() #將指定物件儲存為.rda檔
 save.image() #將目前工作空間中的所有物件儲存為.rda檔
 #Q? test:匯出iris data到你的電腦中
@@ -424,9 +426,13 @@ write.csv(iris,"C:\\Users\\steven\\Desktop\\iris.csv")
 ###條件語法:搭配return使用
 # if(condition){
 #   statements
-# }else if(condiiton){ #可以有多個else if 
+# }else if(condiiton){ #可以有多個else if
 #     statements
-#   }else{statements}
+# }else if(condition){
+#     statements
+# }else{
+#     
+#   }
 #例1:多個statement
 x=1
 if(x >= 2){
@@ -436,8 +442,8 @@ if(x >= 2){
 y
 z
 #例2
-x=4
-y=3
+x=5
+y=8
 if(x>y){
   z=x-y
 }else{
@@ -479,7 +485,7 @@ ifelse(letters %in% c("a","f","p"),paste0("NCU",letters),letters) #!(x %in% y )
 
 #switch():少用
 #例1
-x=5
+x=3
 switch(x,2+2,mean(1:10),rnorm(5)) #x=3,執行switch函數中x後第三個statement
 
 #例2:可用文字替代
@@ -593,11 +599,11 @@ while(fibonacci[i]+fibonacci[i+1]<1000){
 fibonacci
 
 #repeat:類似while,較少用 
-# repeat{
-#   statements
-#   if(condition){break}
-#   statements
-#   }
+repeat{
+  statements
+  if(condition){break}
+  statements
+  }
 
 #Q? test:利用repeat生成小於1000的fibonacci序列
 #Ans:
@@ -640,22 +646,42 @@ summary(iris) #5.843,3.057,3.758,1.199
         # he either throws that number again (in which case he wins) or he throws a
         # seven (in which case he loses).
 
+#Ans
+craps <- function() {
+  #returns TRUE if you win, FALSE otherwise
+  initial.roll <- sum(sample(1:6,2,replace=T))
+  if (initial.roll == 7 || initial.roll == 11) return(TRUE)
+  while (TRUE) {
+    current.roll <- sum(sample(1:6,2,replace=T))
+    if (current.roll == 7 || current.roll == 11) {
+      return(FALSE)
+    } else if (current.roll == initial.roll) {
+      return(TRUE)
+    }
+  }
+}
+mean(replicate(10000, craps()))
+
+
 ###function
 # function(parameters){
 #   statements
 #   return()}
 #例1:
+
 BMI_function <- function(height,weight){
   BMI = weight/(height/100)^2
   return(BMI) #也可以只寫BMI,但沒有這行則不會有output
 }
-BMI_function(157,55)
+BMI <- BMI_function(157,55)
+BMI_function(c(157,170),c(55,60))
 
 #例2:如果要回傳多個值?
 BMI_function <- function(height,weight){
   BMI = weight/(height/100)^2
-  return(height,weight,BMI)
+  return(list(height,weight,BMI))
 }
+BMI_function(157,55)
 #Q? test:BMI_function(157,55) #不允許多引數回傳 如何解決?
 
 #例3:具有預設值的函數
@@ -702,7 +728,7 @@ sample_fun("unif",100) #從U(0,1)分配抽100個樣本
         # 5%!%10
 
 
-###apply循環:不需要做遞迴公式時使用
+###apply向量運算:不需要做遞迴公式時使用
 #與for迴圈比較效率:比較執行10000次抽5000個樣本計算平均數與標準差的時間
 #如何知道程式執行時間?system.time(),Sys.time(),proc.time()
 #方法1:使用迴圈Time difference of 7.908095 secs
@@ -736,7 +762,7 @@ x
 apply(x,1,mean)
 apply(x,2,mean)
 
-#lapply(list, function).sapply(list, function):x為向量或list
+#lapply(list, function),sapply(list, function):x為向量或list
 x <- list(a = 1:10,beta = exp(-3:3),logic = c(T,F,F,T))
 x
 lapply(x,mean) #回傳list
@@ -779,7 +805,6 @@ location <- "C:/Users/steven/Google 雲端硬碟/NCU/專題/時價登錄資料"
 list.files(location)
 file <- paste0(location,"/",list.files(location)[1:7])
 library(readxl)
-start <- Sys.time()
 data <- lapply(file,function(x){read_xls(x,sheet = 3)})
 data <- do.call(rbind,data)
 
@@ -831,7 +856,7 @@ x <- list(a = 1:10,beta = exp(-3:3),logic = c(T,F,F,T))
 sample(x,6,replace = T)
 
 #機率分配函數
-rnorm(n=5,mean = 5,sd=3) #p表示隨機模擬或隨機亂數生成函式.從N(5,3^2)隨機抽5個樣本
+rnorm(n=5,mean = 5,sd=3) #p表示隨機模擬或隨機亂數生成函式,從N(5,3^2)隨機抽5個樣本
 qnorm(p = 0.95) #q表示分位數,符合 u ≤ P(X <= x) 的最小 x
 pnorm(q = 1.96) #p表示累積機率分配函數CDF
 dnorm(x = 0) #d表示機率密度函數pdf
@@ -840,15 +865,183 @@ dnorm(x = 0) #d表示機率密度函數pdf
 #geometric distribution的x為失敗次數(非實驗次數)
 #Q? test:建立一個函數dcunif(n,i,j)可隨機抽取n個discreteU(i,j)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#Ans
+dcunif <- function(n,i,j){
+  i+floor((j-i+1)*runif(n))
+}
+dcunif(5,11,20)
+
+f <- function(n,i,j){sample(i:j,n,T)}
+f(5,11,20)
+
 #Inverse Transform Method
 #Q? test:generate 10000 Poisson(10.5)
+#Ans:
+library(arm)
+seed <- 0309
+set.seed(seed)
+n <- 10000
+x <- rpois(n,10.5)
+mean(x) #10.4646
+var(x) #10.29778
+discrete.hist(x,freq = F,prob.col="black")
+
+poi <- function(x,lambda){ #建立poisson分配的累積機率函數
+  if(is.infinite(x)==T){
+    y=1
+  }else if(x<0){
+    y=0
+  }else{
+    y=sum(lambda^(seq(0,x))/factorial(c(0:x)))*exp(-lambda)
+  }
+  return(y)
+}
+ppois(0,lambda = 10.5)
+poi(0,10.5)
+
+#1
+set.seed(seed)
+y <- c()
+u <- runif(n)
+for(i in 1:n){
+  I=0
+  if(u[i]<poi(I,10.5)){
+    y[i] <- I
+  }else{
+    while(poi(I,10.5) <= u[i]){
+      y[i] <- I+1
+      I <- I+1
+    }
+  }
+}
+mean(y) #10.4904
+var(y) #10.19633
+discrete.hist(y,freq = F,prob.col="black")
+
+#2
+set.seed(seed)
+y <- c()
+u <- runif(n)
+for(i in 1:n){
+  I=-1
+  while(poi(I,10.5) <= u[i]){
+    y[i] <- I+1
+    I <- I+1
+  }
+}
+mean(y) #10.4904
+var(y) #10.19633
+discrete.hist(y,freq = F,prob.col="black")
 
 #Q? test:generate 100 Bin(10,0.2)
+#Ans:
+library(arm)
+seed <- 0309
+set.seed(seed)
+n <- 100
+y <- rbinom(100,10,0.2)
+mean(y) #2.15
+var(y) #1.643939
+discrete.hist(y,freq = F)
+
+set.seed(seed)
+y <- c()
+u <- runif(n)
+for(i in 1:n){
+  I=-1
+  while(pbinom(I,10,0.2) <= u[i]){
+    y[i] <- I+1
+    I <- I+1
+  }
+}
+mean(y) #1.89
+var(y) #1.917071
+discrete.hist(y,freq = F,prob.col="black")
 
 #Q? test:generate 100 Geo(0.2)
+#Ans:
+seed <- 108225023
+set.seed(seed)
+n <- 10000
+x <- rgeom(n,0.2)
+mean(x) #4.0113
+var(x) #19.70134
+discrete.hist(x,freq = F,prob.col="black")
+
+set.seed(seed)
+y <- c()
+u <- runif(n)
+for(i in 1:n){
+  I=-1
+  while(pgeom(I,0.2) <= u[i]){
+    y[i] <- I+1
+    I <- I+1
+  }
+}
+mean(y) #3.9917
+var(y) #19.49658
+discrete.hist(y,freq = F,prob.col="black")
 
 #Accept-Rejection method
 #Q? test:generate 1000 r.v. whose pdf is beta(2,2)
+
+f <- function(x){dbeta(x,2,2)} #要抽樣的目標函數
+g <- function(x){dunif(x)} #已知的分配,g的定義域要包含f的定義域
+c <- optimize(function(x){f(x)/g(x)},interval = c(0,1),maximum = T)$object
+curve(f,0,1)
+curve(f(x)/c*g(x),0,1,add = T,col="green")
+x <- c()
+TF <- c()
+for(i in 1:20){
+  u <- runif(1)
+  y <- runif(1)
+  if(u < f(y)/(c*g(y))){
+    x[i] <- y
+    TF[i] <- T
+    text(y,u,labels = i,col = "red")
+  }else{
+    x[i] <- y
+    TF[i] <- F
+    text(y,u,labels = i,col = "black")
+  }
+  Sys.sleep(1)
+}
+
+
+
+
+
+#Ans:
+x <- c()
+TF <- c()
+while(sum(TF)<10000){
+  u <- runif(1)
+  y <- runif(1)
+  if(u < f(y)/(c*g(y))){
+    x <- c(x,y)
+    TF <- c(TF,T)
+  }else{
+    x <- c(x,y)
+    TF <- c(TF,F)
+  }
+}
+hist(x[TF],freq = F)
+curve(f,0,1,add=T)
 
 #計算mle或極值:
 #stats4::mle(minuslogl,start,method):求MLE
@@ -908,7 +1101,7 @@ curve(dnorm(x),-5,5)
 curve(dnorm(x,mean = 3),col=2,lty=5,add = T)
 
 #qqnorm(x),qqplot(x,y),qqline(x):常態機率圖,常態機率線
-x <- rnorm(100)
+x <- rnorm(1000)
 qqnorm(x)
 qqline(x)
 
@@ -922,7 +1115,7 @@ curve(dnorm(x),-5,5,add=T)
 #names.arg:文字向量,設定每個長條圖的說明文字
 #col:顏色代號向量,設定每個長條的顏色
 #density:設定每個bar的斜線密度
-barplot(table(sample(1:6,100,T)))
+barplot(table(sample(1:6,100,T)),horiz=T,col = c(1:6),density = c(1:6))
 
 #boxplot(x,horizontal,names,col):盒鬚圖
 #x可為向量.矩陣.資料框架
@@ -946,7 +1139,6 @@ pie(pie,labels=names)
 
 #基本設定參數:可用在par()或其他繪圖函數中例如:plot()
         #col:顏色.可用color(),colors(),rainbow(5)得到顏色名稱
-            #https://2formosa.blogspot.com/2018/04/preloaded-datasets-in-r.html
         #lty:線的種類 http://www.sthda.com/english/wiki/line-types-in-r-lty
         #pch:用指定的符號取代圓點
         #font:線寬
@@ -981,8 +1173,11 @@ pie(pie,labels=names)
                   #abline(v=x):加入垂直線
                   #abline(lm(y~x)):加入迴歸線
         #polygon(x,y,density,angle,col):畫出封閉多邊形
-        #legend(x,y,legend):在指定位置加入說明方塊.可搭配col,lty等參數
+        #legend(x,y,legend,pch,lty,col):在指定位置加入說明方塊 https://blog.csdn.net/glodon_mr_chen/article/details/79496403
         #title(main,sub):加入主標題與次標題
+        #axis(side,at,labels,pos,line):加入軸線
+
+#dev.new(height,width):彈出繪圖視窗
 
 #matplot(x,y)在同一張圖上畫出多條線
 library(faraway)
@@ -1064,6 +1259,7 @@ identify() #查詢圖點在資料中的辨識資料
 #使用數學符號
 ?plotmath
 expression(plotmath表達式)
+# https://astrostatistics.psu.edu/su07/R/html/grDevices/html/plotmath.html
 
 #匯出圖片
 #??grDevices
@@ -1083,28 +1279,139 @@ map  # 繪製地圖
 
 
 ###crawler
-#packages for crawler:httr,rvest,rjson,downloader,RSelenium
+#packages for crawler:httr,rvest,rjson,jsonlite,downloader,RSelenium
 #packages for data parser:dplyr,stringr,lubridate
 #https://github.com/datasci-info/crawler101-yotta/tree/master/R
 #https://rpubs.com/jack60810/TKURCrawler?fbclid=IwAR1m3BmH8oUORgeEBZCrmbJXqUvAksBNd55MNEyR-3BASOq4tD9Xf7fVksw
+library(httr)
+library(rjson)
+library(magrittr)
+library(rvest)
+library(jsonlite)
+#http method(GET,POST):https://developer.mozilla.org/zh-TW/docs/Web/HTTP/Methods
+#網頁架構
+#SelectorGadget
 
 
+#json API(json Viewer)
+url <- "https://ecshweb.pchome.com.tw/search/v3.3/all/results?q=sony&page=1&sort=rnk/dc"
+pchome <- jsonlite::fromJSON(url) %>% .$prods %>% do.call(cbind,.) %>% as.data.frame()
+GET(url) %>% content() %>% .$prods %>% do.call(rbind,.) %>% as.data.frame() %>% View()
 
+#cookies
+url <- "https://www.ptt.cc/bbs/Gossiping/index.html"
+GET(url) %>% content(as = "text")
+GET(url,set_cookies(over18=1)) %>% content(as = "text")
 
+#useragent:使用者身分
+url <- "http://buy.yungching.com.tw/region/台北市-_c/pricereduction_filter/"
+GET(url) %>% content(as = "text")
+GET(url,add_headers("User-Agent"="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.76 Safari/537.36")) %>% content(as = "text")
 
+#referer:使用者從哪裡連到網站?
+url <- "http://httpbin.org/get"
+res = url %>% GET %>% content(as = "text")
+res = url %>% GET(add_headers("Referer"="http://httpbin.org/get")) %>% content(as = "text")
 
+#URLencoding:網址上的中文編碼
+"URL?v1=今天&v2=明天" %>% URLencode
+"URL?v1=今天&v2=明天" %>% URLencode(reserved = T)
 
+#POST(url,body)
+#https://emap.pcsc.com.tw/
+url <- "https://emap.pcsc.com.tw/EMapSDK.aspx" #利用F12找到資料
+POST(url)
+postData  <- list("commandid" = "SearchStore",
+                  "city"="台北市",
+                  "town"="松山區",
+                  "roadname"="八德路二段",
+                  "ID"="",
+                  "StoreName"="",
+                  "SpecialStore_Kind"="")
+POST(url,body = postData,encode = "form") %>% content()
 
+#CSS
 
-
-
-
-
-
-
-
-
+#X-PATH
 
 #https://rpubs.com/
 #http://www.cookbook-r.com/
 #https://rc2e.com/
+
+
+##data.table
+library(data.table)
+#https://cran.r-project.org/web/packages/data.table/data.table.pdf
+#?"special-symbols"
+dt <- data.table(iris) #"Sepal.Length","Sepal.Width","Petal.Length","Petal.Width","Species"
+class(dt)
+
+#設置索引(鍵值):與join有關 setkey(dt,colname1,colname2,...),setkey(dt,NULL)
+setkey(dt,Species) # setosa , versicolor , virginica 
+dt[list("setosa")] #dt[dt$Species=="setosa"]
+dt["setosa",mult="first"] #dt[dt$Species=="setosa"][1,]
+dt["setosa",mult="last"] #dt[dt$Species=="setosa"][nrow(dt[dt$Species=="setosa"]),]
+key(dt) #查詢key haskey(dt)
+
+#選擇欄
+dt$Species
+dt[,5]
+dt[,.(Species)]
+dt[,"Species"]
+dt[c("setosa","versicolor")] #dt[dt$Species %in% c("setosa","versicolor"),]
+
+#新增欄 data.table[,colname:=var1]
+dt[,SP:=Sepal.Length+Sepal.Width]
+length(dt) #6
+
+#刪除欄 data.table[,colname:=NULL]
+dt[,SP:=NULL] #dt[,c(col1,col2):=NULL] 刪除多欄
+dt[1:=NULL,] #無法做列刪除
+length(dt) #5
+
+#選擇列
+dt["setosa",on="Species"] #dt[dt$Species=="setosa",]
+dt["setosa",on=.(Species)]
+dt[Species=="setosa"]
+dt[.(c("setosa","versicolor"),1.5),on=c("Species","Petal.Length")]
+
+#改變欄順序 setcolorder(dt,c("colname1","colname3","colname2",...))
+setcolorder(dt,c("Sepal.Width","Species","Sepal.Length","Petal.Length","Petal.Width"))
+dt
+
+#條件語法
+dt[Species=="setosa",Sepal.Length := Sepal.Length + 0.2] #ifelse(dt$Species=="setosa",dt$Sepal.Length = dt$Sepal.Length +0.2,Sepal.Length)
+dt[Species=="versicolor",Sepal.Width := Sepal.Width + 0.3]
+dt[Species=="virginica",c(Petal.Length := Petal.Length + 0.4,Petal.Width := Petal.Width + 0.4)] #與ifelse相同,無法同時做兩件事
+
+#分組計算 by
+dt[,mean(Sepal.Length),by=Species] #以Species分組做Sepal.Length的平均
+
+#JOIN: dt1[dt2],依照setkey的順序做join
+id <- c("108225016","109225016","109225015","109225022")
+name <- c("陳奕儒","林宜興","藺禹筑","黃雅若")
+weight <- c(65,60,55,48)
+height = c(170,179,157,161)
+birth = c("1997-01-20","1997-08-30","1996-02-21","199?-08-08")
+df3 <- as.data.table(id <- c("108225016","109225016","109225015","109225022"),
+                     name,
+                     weight,
+                     height,
+                     birth)
+df4 <- data.table(id = c("陳奕儒","林宜興","黃雅若","藺禹筑"),
+                  number = c("108225016","109225016","109225022","109225015"),
+                  gender = c("M","M","F","F"))
+merge(df3,df4,by.x = c("id","name") , by.y = c("number","id"))
+
+setkey(df3,id,name)
+setkey(df4,number,id)
+df3[df4]
+
+df3[df4,on=c("id","name")]
+
+#分群計算
+dt[,list(avg_SL = mean(Sepal.Length),avg_PW = mean(Petal.Width)),by=Species] #只能用=,不能用 <-
+
+#排序:setorder(data.table,colname) 會直接改變資料的排列
+setorder(dt,Petal.Width) #-colname為倒序
+dt
