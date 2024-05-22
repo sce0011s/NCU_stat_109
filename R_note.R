@@ -1,3 +1,5 @@
+"test git push"
+
 ###R範例:
 #數值解  
 f <- function(x){-(x^2+20)}
